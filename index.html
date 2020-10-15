@@ -58,7 +58,7 @@
     domains.forEach((d, i) => {
       setTimeout(() => {
         getData(d, i + 1);
-      }, i * 2000)
+      }, i * 1000)
     });
   }
 
@@ -70,7 +70,11 @@
       // console.log(dos);
 
       if (dos.length < 2) {
-        return message.innerHTML = `<p class="alert alert-warning mt-5">${domain} is <strong>not a valid domain name</strong></p>`;
+        return table.insertAdjacentHTML("beforeend", `<tr class="bg-warning" >
+          <td colspan="10">
+            ${domain} is <strong>Some Error Occured while checking for domain</strong>
+          </td>
+        </tr>` )
         clearMessage();
       }
 
@@ -87,8 +91,10 @@
 
 
     } catch (e) {
-      table.insertAdjacentHTML("beforeend", `<tr class="bg-warning" col-span="3">
-        ${domain} is <strong>Some Error Occured while checking for domain</strong>
+      table.insertAdjacentHTML("beforeend", `<tr class="bg-warning" >
+          <td colspan="10">
+            ${domain} is <strong>Some Error Occured while checking for domain</strong>
+          </td>
         </tr>` )
       console.log(e)
     }

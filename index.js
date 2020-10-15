@@ -1,13 +1,13 @@
 const path = require("path");
 const { exec } = require("child_process");
 const express = require("express");
-const whois = require("whois-checker");
+const whois = require("whois-checker-v2");
 
 const app = express();
 
 app.use(express.json({ limit: "10kb" }));
 
-// Home route
+// Home routeds
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "/index.html"));
 });
@@ -15,7 +15,7 @@ app.get("/", (req, res) => {
 // Domain check route
 app.get("/check/:domain", async (req, res) => {
   try {
-    const result = await whois(req.params.domain);
+    const result = await whois.lookup(req.params.domain);
 
     res.status(200).json({
       status: "success",
@@ -25,7 +25,7 @@ app.get("/check/:domain", async (req, res) => {
   } catch (err) {
     return res.status(500).json({
       status: "fail",
-      message: `Some error occured while checking the domain ${domain}`,
+      message: `Some error occured while checking the domain ${req.params.domain}`,
     });
   }
 });
