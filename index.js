@@ -71,7 +71,7 @@ app.get("/domains", async (req, res, next) => {
       fs.readFileSync(path.join(__dirname, "/filename.json"), "utf-8")
     );
 
-    const filePath = path.resolve(__dirname, `./uploads/${filename}`);
+    const filePath = path.join(__dirname, `/uploads/${filename}`);
     const data = await fs.readFile(filePath, (err, data) => {
       res.send(data);
     });
