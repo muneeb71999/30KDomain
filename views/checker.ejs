@@ -50,16 +50,24 @@
   //   console.log(data);
   // });
 
+  let timeOut = 300;
+
   async function initApp() {
     const data = await axios.get("/domains");
     const text = data.data
+    // console.log(data);
     const domains = text.split("\n");
-    console.log(domains.length);
+    // console.log(domains.length);
     totalDomains = domains.length;
     domains.forEach((d, i) => {
       setTimeout(() => {
+        let dos = d.split(".");
+        if (dos[1] == "fr" || dos[2] == "fr") {
+          timeOut = 7000;
+        }
         getData(d, i + 1);
-      }, i * 5000)
+      }, i * timeOut)
+      timeOut = 300;
     });
   }
 

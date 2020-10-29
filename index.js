@@ -3,7 +3,6 @@ const express = require("express");
 const whois = require("whois-checker-v2");
 const multer = require("multer");
 const fs = require("fs");
-
 // Init the App
 const app = express();
 
@@ -11,6 +10,7 @@ const app = express();
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 app.use(express.json({ limit: `${1024 * 50}kb` }));
 app.use("/available", express.static(path.join(__dirname, "/available")));
+app.set("view engine", "ejs");
 
 // Multer Init
 const storage = multer.diskStorage({
@@ -42,7 +42,21 @@ const upload = multer({ storage: storage, fileFilter });
 
 // Home route
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "/views/index.html"));
+  // const file = `${__dirname}/available/${req.params.filename}`;
+  const directory = "available";
+  fs.readdir(directory, (err, files) => {
+    let filesList = [];
+    if (err) throw err;
+
+    for (const file of files) {
+      filesList.push(`/download/${file}`);
+    }
+    console.log(filesList);
+    res.render(path.join(__dirname, "/views/index.ejs"), {
+      files: filesList,
+    });
+  });
+  // res.sendFile(path.join(__dirname, "/views/index.html"));
 });
 
 // Get the file
@@ -56,7 +70,8 @@ app.post("/", upload.single("textFile"), (req, res, next) => {
 
 app.get("/list", (req, res, next) => {
   try {
-    return res.sendFile(path.join(__dirname, "/views/checker.html"));
+    return res.render(path.join(__dirname, "/views/checker.ejs"));
+    // return res.sendFile(path.join(__dirname, "/views/checker.html"));
   } catch (err) {
     return res.status(404).json({
       status: "fail",
@@ -70,10 +85,17 @@ app.get("/domains", async (req, res, next) => {
     const { filename } = JSON.parse(
       fs.readFileSync(path.join(__dirname, "/filename.json"), "utf-8")
     );
+    console.log(filename);
 
     const filePath = path.join(__dirname, `/uploads/${filename}`);
+
     const data = await fs.readFile(filePath, (err, data) => {
+      console.log(err);
       res.send(data);
+    });
+    console.log("TEST");
+    await fs.unlink(filePath, () => {
+      console.log("file removed");
     });
 
     // Delete the file from the uploads folder
@@ -134,10 +156,13 @@ app.get("/delete/:filename", (req, res) => {
     console.log(error);
   }
 });
+
 // Domain check route
 app.get("/check/:domain", async (req, res) => {
   try {
-    const result = await whois.lookup(req.params.domain);
+    const result = await whois.lookup(req.params.domain, {
+      timeout: 80 * 1000,
+    });
 
     res.status(200).json({
       status: "success",

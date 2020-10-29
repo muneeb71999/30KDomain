@@ -31,20 +31,15 @@
       <div id="message"></div>
     </div>
   </div>
-  <!-- <div class="container">
-    <table class="table mt-5" id="table">
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Domain</th>
-          <th scope="col">Available</th>
-        </tr>
-      </thead>
-      <tbody id="table-body">
+  <div class="container mt-5">
+    <h3>Your files to Download</h3>
 
-      </tbody>
-    </table>
-  </div> -->
+    <ul class="list-group">
+      <% files.forEach(file => { %>
+      <li class="list-group-item"><a href="<%= file %> " id="downloadBtn" download target="_blank"><%= file %></a> </li>
+      <% }) %>
+    </ul>
+  </div>
 </body>
 <!-- <script>
   const form = document.getElementById("form");
