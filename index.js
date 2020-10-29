@@ -9,7 +9,7 @@ const app = express();
 
 // Middlewares
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
-app.use(express.json({ limit: "10mb" }));
+app.use(express.json({ limit: `${1024 * 50}kb` }));
 app.use("/available", express.static(path.join(__dirname, "/available")));
 
 // Multer Init
@@ -75,6 +75,8 @@ app.get("/domains", async (req, res, next) => {
     const data = await fs.readFile(filePath, (err, data) => {
       res.send(data);
     });
+
+    // Delete the file from the uploads folder
   } catch (err) {
     res.send(err);
   }
@@ -84,7 +86,7 @@ app.post("/write", async (req, res, next) => {
   try {
     console.log(req.body.domains);
     const date = new Date();
-    const filename = date.toDateString();
+    const filename = `${date.toDateString()}-${date.getTime()}`;
 
     fs.writeFileSync(
       path.resolve(__dirname, `./available/${filename}.txt`),
@@ -150,4 +152,4 @@ app.get("/check/:domain", async (req, res) => {
   }
 });
 
-app.listen(process.env.PORT || 3000, console.log("Server is running"));
+app.listen(process.env.PORT || 3000, console.log("Server is running 3000"));
